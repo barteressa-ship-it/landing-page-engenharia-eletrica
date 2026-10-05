@@ -21,29 +21,33 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 <style>
-/* Layout: cabecalho e hero em grafite, secoes claras com texto solto, servicos assimetricos, processo em linha vertical. */
+/* Layout: secoes em camadas com topo arredondado, cantos suaves, blocos que entram pelo lado conforme a rolagem. Grafite e azul do logo. */
 :root{
-  --bg:#f1f3f5;          /* papel frio */
+  --bg:#f1f3f5;
   --surface:#ffffff;
   --tx:#1b2025;
   --tx2:#47525d;
   --rule:#d3d9de;
-  --ac:#1a64a3;          /* azul do logo, sobre claro */
+  --ac:#1a64a3;
   --btn:#1b6db5;
   --btn-h:#14578f;
   --btn-tx:#ffffff;
-  --dk:#202428;          /* grafite do cabecalho */
+  --dk:#202428;
   --dk2:#292e33;
   --dk-tx:#eef1f4;
   --dk-tx2:#b6c0c9;
   --dk-rule:#3d444b;
-  --ac-dk:#7cb9ef;       /* azul do logo, sobre grafite */
+  --ac-dk:#7cb9ef;
   --focus:#f2b01e;
   --display:"IBM Plex Sans Condensed","Arial Narrow",Arial,sans-serif;
   --body:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;
-  --r:4px;
+  --r:24px;
+  --r-lg:32px;
+  --pill:999px;
+  --sheet:clamp(32px,5vw,64px);
   --gutter:clamp(20px,5vw,48px);
   --sec:clamp(64px,9vw,112px);
+  --ease:cubic-bezier(.2,.7,.2,1);
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#171a1d;--surface:#1d2125;--tx:#e9edf0;--tx2:#a9b4be;--rule:#343a40;--ac:#7cb9ef;
@@ -53,8 +57,8 @@
   --dk:#0f1215;--dk2:#171b1f;color-scheme:dark}
 
 *{box-sizing:border-box}
-html{scroll-behavior:smooth;scroll-padding-top:84px}
-body{margin:0;background:var(--bg);color:var(--tx);font:400 1.0625rem/1.65 var(--body);-webkit-font-smoothing:antialiased}
+html{scroll-behavior:smooth;scroll-padding-top:96px;overflow-x:clip}
+body{margin:0;background:var(--bg);color:var(--tx);font:400 1.0625rem/1.65 var(--body);-webkit-font-smoothing:antialiased;overflow-x:clip}
 img{display:block;max-width:100%;height:auto}
 h1,h2,h3{font-family:var(--display);font-weight:700;margin:0;text-wrap:balance;letter-spacing:-.01em;line-height:1.05}
 h2{font-size:clamp(2rem,4.4vw,3.25rem)}
@@ -62,47 +66,68 @@ h3{font-size:clamp(1.5rem,2.4vw,1.875rem);line-height:1.1}
 p{margin:0}
 a{color:inherit}
 :focus-visible{outline:3px solid var(--focus);outline-offset:3px}
-.skip{position:absolute;left:-999px;top:8px;background:#fff;color:#000;padding:10px 16px;border-radius:var(--r);z-index:20}
+.skip{position:absolute;left:-999px;top:8px;background:#fff;color:#000;padding:10px 16px;border-radius:var(--pill);z-index:20}
 .skip:focus{left:8px}
 .wrap{max-width:1180px;margin:0 auto;padding-inline:var(--gutter)}
-.sec{padding-block:var(--sec)}
+.sec{padding-block:var(--sec);overflow-x:clip}
+.sheet{position:relative;border-radius:var(--sheet) var(--sheet) 0 0;margin-top:calc(var(--sheet) * -1)}
+.sec.sheet{padding-top:calc(var(--sec) + var(--sheet))}
 .on-dark{background:var(--dk);color:var(--dk-tx)}
 .on-surface{background:var(--surface)}
 .lead{font-size:clamp(1.125rem,1.6vw,1.3125rem);color:var(--tx2);max-width:60ch}
 .on-dark .lead{color:var(--dk-tx2)}
 
 /* botoes */
-.btn{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 28px;background:var(--btn);color:var(--btn-tx);font:600 1rem/1 var(--body);text-decoration:none;border-radius:var(--r);border:2px solid var(--btn);transition:background-color .2s,border-color .2s}
-.btn:hover{background:var(--btn-h);border-color:var(--btn-h)}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:54px;padding:0 30px;background:var(--btn);color:var(--btn-tx);font:600 1rem/1 var(--body);text-decoration:none;border-radius:var(--pill);border:2px solid var(--btn);transition:background-color .25s,border-color .25s,transform .25s var(--ease)}
+.btn:hover{background:var(--btn-h);border-color:var(--btn-h);transform:translateY(-2px)}
 .btn.ghost{background:transparent;border-color:var(--dk-rule);color:var(--dk-tx)}
 .btn.ghost:hover{border-color:var(--ac-dk);background:transparent}
-.btn.sm{min-height:44px;padding:0 20px;font-size:.9375rem}
+.btn.sm{min-height:46px;padding:0 22px;font-size:.9375rem}
 
 /* cabecalho */
-.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--dk);border-bottom:1px solid var(--dk-rule)}
-.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:20px;min-height:72px;padding-block:8px}
-.brand img{height:52px;width:auto;border-radius:var(--r)}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--dk);background:color-mix(in srgb,var(--dk) 88%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-radius:0 0 var(--r) var(--r)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:20px;min-height:76px;padding-block:8px}
+.brand img{height:52px;width:auto;border-radius:14px}
 .top nav{display:flex;gap:28px;margin-left:auto}
-.top nav a{color:var(--dk-tx2);text-decoration:none;font-weight:500;font-size:.9375rem;padding:10px 0}
+.top nav a{color:var(--dk-tx2);text-decoration:none;font-weight:500;font-size:.9375rem;padding:10px 0;transition:color .2s}
 .top nav a:hover{color:#fff}
 
 /* hero */
-.hero{padding-block:clamp(48px,7vw,88px) clamp(56px,8vw,96px)}
-.hero h1{font-size:clamp(2.5rem,6.3vw,4.75rem);line-height:1;letter-spacing:-.015em;max-width:15em;text-wrap:balance;animation:rise .7s ease-out both}
-.hero-row{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:clamp(32px,6vw,88px);margin-top:clamp(28px,4vw,48px);align-items:start}
-.hero .lead{animation:rise .7s .12s ease-out both}
-.cta-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px;animation:rise .7s .22s ease-out both}
-.receive{border-left:3px solid var(--ac-dk);padding-left:24px;animation:rise .7s .3s ease-out both}
-.receive h2{font-family:var(--body);font-size:1rem;font-weight:600;letter-spacing:0;color:var(--dk-tx);margin-bottom:12px}
-.receive ul{list-style:none;margin:0;padding:0;display:grid;gap:10px;color:var(--dk-tx2)}
-@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.hero{padding-block:clamp(48px,7vw,88px) calc(clamp(56px,8vw,96px) + var(--sheet));margin-top:calc(-76px);padding-top:calc(clamp(48px,7vw,88px) + 76px);overflow-x:clip;background:radial-gradient(70% 80% at 88% 62%,rgba(52,126,208,.22),transparent 62%),var(--dk)}
+.hero h1{font-size:clamp(2.5rem,6.3vw,4.75rem);line-height:1;letter-spacing:-.015em;max-width:15em;animation:inL .9s var(--ease) both}
+.hero-row{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,5fr);gap:clamp(32px,6vw,80px);margin-top:clamp(28px,4vw,48px);align-items:center}
+.hero .lead{animation:inL .9s .12s var(--ease) both}
+.cta-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
+.hero .cta-row{animation:inL .9s .24s var(--ease) both}
+.uni-card{margin:0;padding:clamp(18px,2.4vw,28px);border-radius:var(--r-lg);background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.1);animation:inR 1s .2s var(--ease) both}
+.uni-card figcaption{margin-top:12px;font-size:.875rem;color:var(--dk-tx2);text-align:center}
+.uni{display:block;width:100%;height:auto}
+.uni text{font-family:var(--body)}
+.uni .t1{fill:var(--dk-tx);font-weight:600;font-size:18px}
+.uni .t2{fill:var(--dk-tx2);font-size:15px}
+.uni .sh{fill:rgba(124,185,239,.1);stroke:var(--ac-dk);stroke-width:2}
+.uni .ic{fill:none;stroke:var(--ac-dk);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.uni .ic .fl,.uni .fl{fill:var(--ac-dk);stroke:none}
+.uni .ln{fill:none;stroke:var(--ac-dk);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1;animation:draw .7s cubic-bezier(.4,0,.2,1) var(--d,0s) forwards}
+.uni .nd{opacity:0;transform-box:fill-box;transform-origin:center;animation:pop .6s var(--ease) var(--d,0s) forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes pop{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
+@keyframes inL{from{opacity:0;transform:translateX(-56px)}to{opacity:1;transform:none}}
+@keyframes inR{from{opacity:0;transform:translateX(56px)}to{opacity:1;transform:none}}
+
+/* entrada durante a rolagem: cada bloco chega pelo lado em que esta no layout */
+.js [data-r]{opacity:0;transition:opacity .9s var(--ease),transform .9s var(--ease);transition-delay:var(--d,0s)}
+.js [data-r="l"]{transform:translateX(-64px)}
+.js [data-r="r"]{transform:translateX(64px)}
+.js [data-r="u"]{transform:translateY(40px)}
+.js [data-r].in{opacity:1;transform:none}
 
 /* problemas */
 .problems{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(32px,6vw,96px);align-items:start}
 .problems .lead{margin-top:20px}
 .plist{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:20px 40px}
-.plist li{font-weight:500;padding-left:22px;position:relative}
-.plist li::before{content:"";position:absolute;left:0;top:.62em;width:9px;height:9px;background:var(--tx2);border-radius:1px}
+.plist li{font-weight:500;padding-left:24px;position:relative}
+.plist li::before{content:"";position:absolute;left:0;top:.6em;width:10px;height:10px;background:var(--tx2);border-radius:50%}
 .closing{margin-top:clamp(32px,5vw,56px);font:600 clamp(1.25rem,2.2vw,1.625rem)/1.35 var(--body);max-width:34em}
 
 /* valor */
@@ -117,28 +142,30 @@ a{color:inherit}
 /* servicos */
 .svc-head{max-width:46rem;margin-bottom:clamp(40px,6vw,72px)}
 .svc-head .lead{margin-top:20px}
-.svc-main{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:clamp(40px,6vw,88px)}
-.svc{display:flex;flex-direction:column;gap:20px}
-.svc.big{padding-top:28px;border-top:4px solid var(--ac)}
-.svc.minor{padding-top:24px;border-top:1px solid var(--rule)}
+.svc-main{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:clamp(20px,3vw,32px)}
+.svc{display:flex;flex-direction:column;gap:20px;padding:clamp(26px,3.2vw,40px);border-radius:var(--r-lg);background:var(--surface)}
+.svc.big{background:var(--dk);color:var(--dk-tx)}
+.svc.big > p,.svc.big .scope{color:var(--dk-tx2)}
+.svc.big .facts dt{color:var(--ac-dk)}
+.svc.big .scope li::before{background:var(--ac-dk)}
 .svc > p{color:var(--tx2);max-width:56ch}
 .facts{margin:0;display:grid;gap:14px}
 .facts div{display:grid;grid-template-columns:minmax(0,7.5rem) minmax(0,1fr);gap:4px 20px}
 .facts dt{font-weight:600;font-size:.9375rem;color:var(--ac)}
 .facts dd{margin:0;font-size:1rem}
 .scope{list-style:none;margin:4px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:8px 28px;font-size:.9375rem;color:var(--tx2)}
-.scope li{padding-left:16px;position:relative}
-.scope li::before{content:"";position:absolute;left:0;top:.65em;width:6px;height:6px;background:var(--ac);border-radius:1px}
-.svc-minor{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(40px,5vw,64px) clamp(32px,6vw,88px);margin-top:clamp(48px,7vw,88px)}
+.scope li{padding-left:18px;position:relative}
+.scope li::before{content:"";position:absolute;left:0;top:.6em;width:7px;height:7px;background:var(--ac);border-radius:50%}
+.svc-minor{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(20px,3vw,32px);margin-top:clamp(20px,3vw,32px)}
 .fine{margin-top:clamp(32px,4vw,48px);color:var(--tx2);font-size:.9375rem}
 
 /* visualizacoes conceituais */
 .concept-head{max-width:46rem;margin-bottom:clamp(32px,5vw,56px)}
 .concept-head .lead{margin-top:20px}
 .gal{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:clamp(24px,3vw,40px) clamp(16px,2.4vw,32px)}
-.gal figure{margin:0;display:flex;flex-direction:column;gap:10px;min-width:0}
-.gal img{width:100%;object-fit:cover;border-radius:var(--r);background:var(--dk2)}
-.gal figcaption{font-size:.875rem;color:var(--dk-tx2);line-height:1.45}
+.gal figure{margin:0;display:flex;flex-direction:column;gap:12px;min-width:0}
+.gal img{width:100%;object-fit:cover;border-radius:var(--r-lg);background:var(--dk2)}
+.gal figcaption{font-size:.875rem;color:var(--dk-tx2);line-height:1.45;padding-inline:6px}
 .f1{grid-column:1/9;grid-row:1/3}.f1 img{aspect-ratio:16/10;height:100%;min-height:0}
 .f2{grid-column:9/13;grid-row:1}.f3{grid-column:9/13;grid-row:2}.f2 img,.f3 img{aspect-ratio:4/3}
 .f4{grid-column:1/7}.f5{grid-column:7/13}.f4 img,.f5 img{aspect-ratio:3/2}
@@ -146,17 +173,17 @@ a{color:inherit}
 /* processo */
 .process{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,7fr);gap:clamp(32px,6vw,96px)}
 .process .lead{margin-top:20px}
-.steps{list-style:none;margin:0;padding:0 0 0 36px;position:relative;display:grid;gap:clamp(28px,4vw,44px)}
-.steps::before{content:"";position:absolute;left:5px;top:10px;bottom:10px;width:2px;background:var(--rule)}
+.steps{list-style:none;margin:0;padding:0 0 0 40px;position:relative;display:grid;gap:clamp(28px,4vw,44px)}
+.steps::before{content:"";position:absolute;left:6px;top:10px;bottom:10px;width:2px;border-radius:2px;background:var(--rule)}
 .steps li{position:relative}
-.steps li::before{content:"";position:absolute;left:-36px;top:.42em;width:12px;height:12px;border-radius:50%;background:var(--ac);box-shadow:0 0 0 5px var(--bg)}
+.steps li::before{content:"";position:absolute;left:-40px;top:.42em;width:14px;height:14px;border-radius:50%;background:var(--ac);box-shadow:0 0 0 6px var(--bg)}
 .steps h3{font-size:clamp(1.4rem,2.2vw,1.75rem)}
 .steps p{margin-top:6px;color:var(--tx2);max-width:52ch}
 .process .cta-row{margin-top:36px}
 
 /* sobre */
 .about{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:clamp(32px,6vw,96px);align-items:center}
-.about img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:var(--r)}
+.about img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:40px 40px 150px 40px}
 .about .lead{margin-top:20px}
 .who{margin-top:32px;padding-top:24px;border-top:1px solid var(--rule);display:grid;gap:2px}
 .who strong{font:700 1.75rem/1.1 var(--display)}
@@ -167,7 +194,7 @@ a{color:inherit}
 .final{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:clamp(32px,6vw,96px);align-items:end}
 .final h2{font-size:clamp(2.25rem,5.2vw,4rem)}
 .final .lead{margin-top:20px}
-.contact{display:grid;gap:18px;font-size:1.0625rem}
+.contact{display:grid;gap:18px;font-size:1.0625rem;margin:0}
 .contact div{display:grid;gap:2px}
 .contact dt{font-size:.875rem;color:var(--dk-tx2)}
 .contact dd{margin:0;font-weight:500}
@@ -176,50 +203,53 @@ a{color:inherit}
 .final .cta-row{margin-top:32px}
 
 /* rodape */
-.foot{background:var(--dk2);color:var(--dk-tx2);border-top:1px solid var(--dk-rule);padding-block:48px}
+.foot{background:var(--dk2);color:var(--dk-tx2);padding-block:calc(48px + 8px) 48px;overflow-x:clip}
 .foot .wrap{display:grid;grid-template-columns:auto 1fr;gap:24px 56px;align-items:center}
-.foot img{height:72px;width:auto;border-radius:var(--r)}
+.foot img{height:72px;width:auto;border-radius:16px}
 .foot p{margin:0;font-size:.9375rem}
 .foot strong{color:var(--dk-tx);font-weight:600}
 .foot .copy{grid-column:1/-1;font-size:.875rem}
 
-/* entrada suave durante a rolagem, sem JavaScript; sem suporte, tudo aparece normalmente */
-@supports (animation-timeline:view()){
-  @media (prefers-reduced-motion:no-preference){
-    .rv{animation:rise linear both;animation-timeline:view();animation-range:entry 0% entry 35%}
-  }
-}
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
-  .hero h1,.hero .lead,.cta-row,.receive{animation:none}
-  .btn{transition:none}
+  .hero h1,.hero .lead,.hero .cta-row,.uni-card{animation:none}
+  .uni .ln{stroke-dashoffset:0;animation:none}
+  .uni .nd{opacity:1;animation:none}
+  .btn{transition:none}.btn:hover{transform:none}
 }
 
 @media (max-width:980px){
   .top nav{display:none}
-  .top .wrap{justify-content:space-between}
   .hero-row,.problems,.value,.svc-main,.process,.about,.final{grid-template-columns:minmax(0,1fr)}
   .svc-minor{grid-template-columns:minmax(0,1fr)}
   .f1{grid-column:1/-1;grid-row:auto}.f2{grid-column:1/7;grid-row:auto}.f3{grid-column:7/13;grid-row:auto}.f4,.f5{grid-column:1/-1}
   .about img{max-width:420px}
+  .js [data-r="l"]{transform:translateX(-36px)}
+  .js [data-r="r"]{transform:translateX(36px)}
+  .uni-card{max-width:560px}
 }
 @media (max-width:640px){
   .brand img{height:44px}
-  .top .wrap{min-height:64px}
+  .top .wrap{min-height:68px}
+  .hero{margin-top:-68px;padding-top:calc(clamp(48px,7vw,88px) + 68px)}
   .hero h1{font-size:clamp(2.35rem,11.5vw,3rem)}
   .cta-row .btn{flex:1 1 100%}
   .plist,.scope{grid-template-columns:minmax(0,1fr)}
   .vlist div,.facts div{grid-template-columns:minmax(0,1fr)}
   .f2,.f3{grid-column:1/-1}
   .foot .wrap{grid-template-columns:minmax(0,1fr)}
-  .top .btn.sm{padding:0 14px;font-size:.875rem}
+  .top .btn.sm{padding:0 16px;font-size:.875rem}
+  .about img{border-radius:32px 32px 110px 32px}
+  .uni .t1{font-size:21px}.uni .t2{font-size:17px}
 }
 </style>
 <script>
 function figOut(i){var f=i.closest('figure');if(f)f.remove();
   var s=document.getElementById('conceito');
   if(s&&!s.querySelector('figure'))s.remove();}
+if('IntersectionObserver' in window&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('js');
 </script>
+<noscript><style>[data-r]{opacity:1!important;transform:none!important}</style></noscript>
 
 </head>
 <body>
@@ -251,27 +281,48 @@ function figOut(i){var f=i.closest('figure');if(f)f.remove();
           <a class="btn ghost" href="#servicos">Conhecer serviços</a>
         </div>
       </div>
-      <div class="receive">
-        <h2>O que você recebe</h2>
-        <ul>
-          <li>Dimensionamento de circuitos, cabos e proteções</li>
-          <li>Diagramas elétricos e quadro de distribuição</li>
-          <li>Pontos de iluminação, tomadas e pontos de utilização</li>
-          <li>Memorial e documentação para a execução</li>
-        </ul>
-      </div>
+      <figure class="uni-card">
+<svg class="uni" viewBox="0 0 520 452" role="img" aria-labelledby="uni-t uni-d">
+  <title id="uni-t">Diagrama unifilar ilustrativo</title>
+  <desc id="uni-d">Entrada de energia, proteção geral com disjuntor, DR e DPS, quadro de distribuição e quatro circuitos: iluminação, tomadas, chuveiro e ar-condicionado.</desc>
+  <g class="nd" style="--d:.15s"><circle class="sh" cx="260" cy="34" r="22"/><path class="ic" d="M260 24v20M250 34h20"/>
+    <text class="t2" x="294" y="40">Entrada de energia</text></g>
+  <path class="ln" pathLength="1" style="--d:.25s" d="M260 56V98"/>
+  <g class="nd" style="--d:.55s"><rect class="sh" x="232" y="98" width="56" height="72" rx="16"/>
+    <g class="ic"><circle cx="260" cy="118" r="3.5"/><path d="M260 152l14-26"/><circle cx="260" cy="152" r="3.5"/></g>
+    <text class="t1" x="304" y="128">Proteção geral</text><text class="t2" x="304" y="150">Disjuntor, DR e DPS</text></g>
+  <path class="ln" pathLength="1" style="--d:.65s" d="M260 170V206"/>
+  <g class="nd" style="--d:.95s"><rect class="sh" x="20" y="206" width="480" height="52" rx="26"/>
+    <text class="t1" x="260" y="238" text-anchor="middle">Quadro de distribuição</text></g>
+  <path class="ln" pathLength="1" style="--d:1.05s" d="M260 258V292"/>
+  <path class="ln" pathLength="1" style="--d:1.25s" d="M85 292H435"/>
+  <path class="ln" pathLength="1" style="--d:1.55s" d="M85 292V330"/>
+  <g class="nd" style="--d:1.85s"><circle class="sh" cx="85" cy="356" r="26"/><g class="ic"><circle cx="85" cy="352" r="9"/><path d="M80 366h10M81 371h8"/></g>
+    <text class="t1" x="85" y="410" text-anchor="middle">Iluminação</text><text class="t2" x="85" y="431" text-anchor="middle">Circuito 1</text></g>
+  <path class="ln" pathLength="1" style="--d:1.55s" d="M202 292V330"/>
+  <g class="nd" style="--d:1.95s"><circle class="sh" cx="202" cy="356" r="26"/><g class="ic"><rect x="191" y="345" width="22" height="22" rx="7"/><circle cx="198" cy="356" r="1.6" class="fl"/><circle cx="206" cy="356" r="1.6" class="fl"/></g>
+    <text class="t1" x="202" y="410" text-anchor="middle">Tomadas</text><text class="t2" x="202" y="431" text-anchor="middle">Circuito 2</text></g>
+  <path class="ln" pathLength="1" style="--d:1.55s" d="M318 292V330"/>
+  <g class="nd" style="--d:2.05s"><circle class="sh" cx="318" cy="356" r="26"/><g class="ic"><path d="M306 352a12 12 0 0 1 24 0z"/><path d="M311 360v4M318 360v7M325 360v4"/></g>
+    <text class="t1" x="318" y="410" text-anchor="middle">Chuveiro</text><text class="t2" x="318" y="431" text-anchor="middle">Circuito 3</text></g>
+  <path class="ln" pathLength="1" style="--d:1.55s" d="M435 292V330"/>
+  <g class="nd" style="--d:2.15s"><circle class="sh" cx="435" cy="356" r="26"/><g class="ic"><rect x="421" y="345" width="28" height="13" rx="5"/><path d="M426 365q3 4 6 0t6 0t6 0"/></g>
+    <text class="t1" x="435" y="410" text-anchor="middle">Ar-cond.</text><text class="t2" x="435" y="431" text-anchor="middle">Circuito 4</text></g>
+</svg>
+        <figcaption>Exemplo ilustrativo de diagrama unifilar residencial.</figcaption>
+      </figure>
     </div>
   </div>
 </section>
 
-<section class="sec" aria-labelledby="problemas">
+<section class="sec sheet" aria-labelledby="problemas">
   <div class="wrap">
-    <div class="problems rv">
-      <div>
+    <div class="problems">
+      <div data-r="l">
         <h2 id="problemas">Evite problemas antes que eles aconteçam</h2>
         <p class="lead">Uma instalação elétrica mal planejada pode gerar desperdícios, retrabalho, custos inesperados e riscos à segurança.</p>
       </div>
-      <ul class="plist">
+      <ul class="plist" data-r="r">
         <li>Retrabalho durante a obra</li>
         <li>Materiais comprados de forma inadequada</li>
         <li>Custos inesperados</li>
@@ -282,19 +333,19 @@ function figOut(i){var f=i.closest('figure');if(f)f.remove();
         <li>Falta de planejamento</li>
       </ul>
     </div>
-    <p class="closing rv">Um bom projeto elétrico não é apenas um desenho. É o planejamento que evita problemas antes que eles cheguem à obra.</p>
+    <p class="closing" data-r="u">Um bom projeto elétrico não é apenas um desenho. É o planejamento que evita problemas antes que eles cheguem à obra.</p>
   </div>
 </section>
 
-<section class="sec on-surface" aria-labelledby="valor">
+<section class="sec sheet on-surface" aria-labelledby="valor">
   <div class="wrap">
-    <div class="value rv">
-      <div>
+    <div class="value">
+      <div data-r="l">
         <h2 id="valor">Um projeto pensado para a sua obra</h2>
         <p class="lead">Cada projeto é desenvolvido de acordo com as características, necessidades e objetivos específicos da instalação.</p>
         <p class="note">O resultado é menos retrabalho, melhor planejamento de materiais e mais previsibilidade para a execução.</p>
       </div>
-      <dl class="vlist">
+      <dl class="vlist" data-r="r">
         <div><dt>Segurança</dt><dd>Dimensionamento adequado e especificações técnicas para uma instalação mais segura.</dd></div>
         <div><dt>Eficiência</dt><dd>Soluções planejadas para utilizar os recursos elétricos de forma eficiente.</dd></div>
         <div><dt>Economia</dt><dd>Planejamento que ajuda a evitar desperdícios, alterações e retrabalho.</dd></div>
@@ -306,15 +357,15 @@ function figOut(i){var f=i.closest('figure');if(f)f.remove();
   </div>
 </section>
 
-<section class="sec" id="servicos" aria-labelledby="serv">
+<section class="sec sheet" id="servicos" aria-labelledby="serv">
   <div class="wrap">
-    <div class="svc-head rv">
+    <div class="svc-head" data-r="u">
       <h2 id="serv">Serviços de engenharia elétrica</h2>
       <p class="lead">Para residências, comércios e ambientes industriais, do projeto à documentação necessária para executar.</p>
     </div>
 
     <div class="svc-main">
-      <article class="svc big rv">
+      <article class="svc big" data-r="l">
         <h3>Projetos elétricos</h3>
         <p>Projetos de instalações elétricas de baixa tensão, com foco em segurança, dimensionamento adequado e execução organizada.</p>
         <dl class="facts">
@@ -334,7 +385,7 @@ function figOut(i){var f=i.closest('figure');if(f)f.remove();
         </ul>
       </article>
 
-      <article class="svc big rv">
+      <article class="svc big" data-r="r">
         <h3>Projetos luminotécnicos</h3>
         <p>Estudos de iluminação para melhorar conforto visual, funcionalidade, estética e eficiência.</p>
         <dl class="facts">
@@ -346,7 +397,7 @@ function figOut(i){var f=i.closest('figure');if(f)f.remove();
     </div>
 
     <div class="svc-minor">
-      <article class="svc minor rv">
+      <article class="svc minor" data-r="l">
         <h3>SPDA</h3>
         <p>Projetos de sistemas de proteção contra descargas atmosféricas.</p>
         <dl class="facts">
@@ -355,7 +406,7 @@ function figOut(i){var f=i.closest('figure');if(f)f.remove();
           <div><dt>Benefício</dt><dd>Um sistema de proteção planejado e documentado.</dd></div>
         </dl>
       </article>
-      <article class="svc minor rv">
+      <article class="svc minor" data-r="r">
         <h3>Laudos e relatórios técnicos</h3>
         <p>Documentação técnica para avaliação, análise e registro das condições das instalações.</p>
         <dl class="facts">
@@ -364,7 +415,7 @@ function figOut(i){var f=i.closest('figure');if(f)f.remove();
           <div><dt>Benefício</dt><dd>Um registro claro para apoiar as próximas decisões.</dd></div>
         </dl>
       </article>
-      <article class="svc minor rv">
+      <article class="svc minor" data-r="l">
         <h3>Adequações elétricas</h3>
         <p>Soluções para instalações que precisam ser corrigidas, atualizadas ou adequadas.</p>
         <dl class="facts">
@@ -373,7 +424,7 @@ function figOut(i){var f=i.closest('figure');if(f)f.remove();
           <div><dt>Benefício</dt><dd>Uma instalação reorganizada e mais segura.</dd></div>
         </dl>
       </article>
-      <article class="svc minor rv">
+      <article class="svc minor" data-r="r">
         <h3>Documentação técnica</h3>
         <p>Desenvolvimento da documentação técnica necessária para o planejamento e a execução dos serviços.</p>
         <dl class="facts">
@@ -387,61 +438,61 @@ function figOut(i){var f=i.closest('figure');if(f)f.remove();
   </div>
 </section>
 
-<section class="sec on-dark" id="conceito" aria-labelledby="conc">
+<section class="sec sheet on-dark" id="conceito" aria-labelledby="conc">
   <div class="wrap">
-    <div class="concept-head rv">
+    <div class="concept-head" data-r="u">
       <h2 id="conc">Veja como seu projeto pode ganhar vida</h2>
       <p class="lead">As imagens desta seção são visualizações conceituais, criadas para ilustrar possíveis aplicações dos serviços. Elas não representam obras ou projetos já entregues.</p>
     </div>
     <div class="gal">
-      <figure class="f1 rv">
+      <figure class="f1" data-r="l">
         <img src="luminotecnico-residencial.jpg" width="1600" height="1000" loading="lazy" decoding="async" alt="Visualização conceitual de sala de estar e jantar com iluminação geral, de destaque e indireta" onerror="figOut(this)">
         <figcaption>Visualização conceitual de projeto luminotécnico residencial.</figcaption>
       </figure>
-      <figure class="f2 rv">
+      <figure class="f2" data-r="r">
         <img src="luminotecnico-comercial.jpg" width="1200" height="900" loading="lazy" decoding="async" alt="Visualização conceitual de loja moderna com iluminação de produtos e de destaque" onerror="figOut(this)">
         <figcaption>Visualização conceitual de projeto luminotécnico comercial.</figcaption>
       </figure>
-      <figure class="f3 rv">
+      <figure class="f3" data-r="r" style="--d:.12s">
         <img src="luminotecnico-escritorio.jpg" width="1200" height="900" loading="lazy" decoding="async" alt="Visualização conceitual de escritório contemporâneo com iluminação planejada" onerror="figOut(this)">
         <figcaption>Visualização conceitual de projeto luminotécnico para escritório.</figcaption>
       </figure>
-      <figure class="f4 rv">
-        <img src="projeto-eletrico-residencial.jpg" width="1500" height="1000" loading="lazy" decoding="async" alt="Representação conceitual de projeto elétrico residencial, com planta simplificada, pontos elétricos e circuitos" onerror="figOut(this)">
+      <figure class="f4" data-r="l">
+        <img src="projeto-eletrico-residencial.jpg" width="1500" height="1000" loading="lazy" decoding="async" alt="Representação conceitual de projeto elétrico residencial, com interruptores, tomada, eletrodutos e quadro de distribuição" onerror="figOut(this)">
         <figcaption>Representação conceitual de projeto elétrico residencial.</figcaption>
       </figure>
-      <figure class="f5 rv">
-        <img src="spda-conceitual.jpg" width="1500" height="1000" loading="lazy" decoding="async" alt="Representação conceitual de sistema SPDA em uma edificação, com captação, descidas e aterramento" onerror="figOut(this)">
+      <figure class="f5" data-r="r">
+        <img src="spda-conceitual.jpg" width="1500" height="1000" loading="lazy" decoding="async" alt="Representação conceitual de sistema SPDA em uma edificação, com captores no topo e condutores de descida na fachada" onerror="figOut(this)">
         <figcaption>Representação conceitual de sistema SPDA em uma edificação.</figcaption>
       </figure>
     </div>
   </div>
 </section>
 
-<section class="sec" id="processo" aria-labelledby="proc">
+<section class="sec sheet" id="processo" aria-labelledby="proc">
   <div class="wrap">
     <div class="process">
-      <div class="rv">
+      <div data-r="l">
         <h2 id="proc">Do primeiro contato ao projeto pronto para execução</h2>
         <p class="lead">Um caminho simples, com cada etapa explicada.</p>
         <div class="cta-row"><a class="btn" href="https://wa.me/5545999366414?text=Ol%C3%A1%2C%20gostaria%20de%20solicitar%20um%20or%C3%A7amento%20de%20projeto%20el%C3%A9trico." target="_blank" rel="noopener">Solicitar orçamento</a></div>
       </div>
       <ol class="steps">
-        <li class="rv"><h3>Entendimento da necessidade</h3><p>Conversamos para entender sua obra, instalação e objetivos.</p></li>
-        <li class="rv"><h3>Levantamento das informações</h3><p>São analisadas as características e necessidades do projeto.</p></li>
-        <li class="rv"><h3>Desenvolvimento do projeto</h3><p>A engenharia transforma as informações em um projeto elétrico completo e personalizado.</p></li>
-        <li class="rv"><h3>Revisão e documentação</h3><p>O projeto e a documentação técnica são revisados e organizados para a entrega.</p></li>
-        <li class="rv"><h3>Entrega pronta para execução</h3><p>Você recebe as informações necessárias para orientar a execução da instalação.</p></li>
+        <li data-r="r"><h3>Entendimento da necessidade</h3><p>Conversamos para entender sua obra, instalação e objetivos.</p></li>
+        <li data-r="r" style="--d:.08s"><h3>Levantamento das informações</h3><p>São analisadas as características e necessidades do projeto.</p></li>
+        <li data-r="r" style="--d:.16s"><h3>Desenvolvimento do projeto</h3><p>A engenharia transforma as informações em um projeto elétrico completo e personalizado.</p></li>
+        <li data-r="r" style="--d:.24s"><h3>Revisão e documentação</h3><p>O projeto e a documentação técnica são revisados e organizados para a entrega.</p></li>
+        <li data-r="r" style="--d:.32s"><h3>Entrega pronta para execução</h3><p>Você recebe as informações necessárias para orientar a execução da instalação.</p></li>
       </ol>
     </div>
   </div>
 </section>
 
-<section class="sec on-surface" id="sobre" aria-labelledby="sob">
+<section class="sec sheet on-surface" id="sobre" aria-labelledby="sob">
   <div class="wrap">
-    <div class="about rv">
-      <img src="barbara-teressa-kerstner.jpg" width="900" height="900" loading="lazy" decoding="async" alt="Barbara Teressa Kerstner, engenheira eletricista responsável pela Kerstner Engenharia Elétrica">
-      <div>
+    <div class="about">
+      <img data-r="l" src="barbara-teressa-kerstner.jpg" width="900" height="900" loading="lazy" decoding="async" alt="Barbara Teressa Kerstner, engenheira eletricista responsável pela Kerstner Engenharia Elétrica">
+      <div data-r="r">
         <h2 id="sob">Engenharia elétrica para transformar planejamento em segurança e eficiência</h2>
         <p class="lead">Cada projeto é desenvolvido com atenção aos detalhes técnicos e às necessidades específicas da instalação, buscando proporcionar mais segurança, organização e previsibilidade para a execução.</p>
         <div class="who">
@@ -455,15 +506,15 @@ function figOut(i){var f=i.closest('figure');if(f)f.remove();
   </div>
 </section>
 
-<section class="sec on-dark" id="contato" aria-labelledby="fim">
+<section class="sec sheet on-dark" id="contato" aria-labelledby="fim">
   <div class="wrap">
     <div class="final">
-      <div class="rv">
+      <div data-r="l">
         <h2 id="fim">Sua obra começa com um bom planejamento.</h2>
         <p class="lead">Evite improvisos, retrabalho e custos desnecessários. Tenha um projeto elétrico desenvolvido para a sua necessidade e esteja mais preparado para executar sua obra com segurança e eficiência.</p>
         <div class="cta-row"><a class="btn" href="https://wa.me/5545999366414?text=Ol%C3%A1%2C%20gostaria%20de%20solicitar%20um%20or%C3%A7amento%20de%20projeto%20el%C3%A9trico." target="_blank" rel="noopener">Solicitar orçamento pelo WhatsApp</a></div>
       </div>
-      <dl class="contact rv">
+      <dl class="contact" data-r="r">
         <div><dt>WhatsApp</dt><dd><a href="https://wa.me/5545999366414?text=Ol%C3%A1%2C%20gostaria%20de%20solicitar%20um%20or%C3%A7amento%20de%20projeto%20el%C3%A9trico." target="_blank" rel="noopener">(45) 99936-6414</a></dd></div>
         <div><dt>E-mail</dt><dd><a href="mailto:barteressa@gmail.com">barteressa@gmail.com</a></dd></div>
         <div><dt>Atendimento</dt><dd>Foz do Iguaçu (PR) e região</dd></div>
@@ -474,7 +525,7 @@ function figOut(i){var f=i.closest('figure');if(f)f.remove();
 
 </main>
 
-<footer class="foot">
+<footer class="foot sheet">
   <div class="wrap">
     <img src="logo-kerstner.jpg" width="610" height="240" loading="lazy" decoding="async" alt="Kerstner Engenharia Elétrica">
     <p><strong>Barbara Teressa Kerstner</strong><br>Engenharia Elétrica<br>CREA-PR: PR-238909/D</p>
@@ -482,5 +533,15 @@ function figOut(i){var f=i.closest('figure');if(f)f.remove();
   </div>
 </footer>
 
+<script>
+(function(){
+  var els=document.querySelectorAll('[data-r]');
+  if(!document.documentElement.classList.contains('js')){return}
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}});
+  },{threshold:.12,rootMargin:'0px 0px -6% 0px'});
+  els.forEach(function(el){io.observe(el)});
+})();
+</script>
 </body>
 </html>
